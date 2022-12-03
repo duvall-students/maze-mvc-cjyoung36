@@ -8,6 +8,7 @@ import searches.Greedy;
 import searches.Magic;
 import searches.RandomWalk;
 import searches.SearchAlgorithm;
+import searches.SearchFactory;
 
 /**
  * 
@@ -38,6 +39,7 @@ public class MazeController {
 	// instance variables for cross class communication
 	public Maze myMaze;
 	public MazeDisplay myMazeDisplay;
+	public SearchFactory myFactory;
 	
 	// Instance variables moved over from the model and display
 	private Greedy greedy;				
@@ -54,6 +56,7 @@ public class MazeController {
 		start = new Point(1, 1);
 		goal = new Point(rows - 2, cols - 2);
 		myMaze = new Maze(rows, cols);
+		myFactory = new SearchFactory();
 	}
 
 	public void step(double elapsedTime) {
@@ -69,8 +72,8 @@ public class MazeController {
 		}
 	}
 
-	public void startSearch(SearchAlgorithm search) {
-		this.search = search;
+	public void startSearch(String searchType) {
+		search = myFactory.makeSearch(searchType, myMaze, start, goal);
 	}
 	
 	public int getCellState(Point position) {
