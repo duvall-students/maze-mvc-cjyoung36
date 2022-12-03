@@ -60,7 +60,7 @@ public class MazeDisplay extends Application {
 
 	// The maze to search
 	private Maze maze;
-	
+
 	// Maze controller access
 	public MazeController mazeController;
 
@@ -70,7 +70,7 @@ public class MazeDisplay extends Application {
 		// Initialize maze and maze controller
 		maze = new Maze(NUM_ROWS, NUM_COLUMNS);
 		mazeController = new MazeController(NUM_ROWS, NUM_COLUMNS);
-		
+
 		// Initializing the gui
 		myScene = setupScene();
 		stage.setScene(myScene);
@@ -188,7 +188,7 @@ public class MazeDisplay extends Application {
 		}
 		return drawing;
 	}
-	
+
 	/*
 	 * Re-create the maze from scratch.
 	 * When this happens, we should also stop the search.
@@ -253,14 +253,14 @@ public class MazeDisplay extends Application {
 		else if (mazeController.getSearch().equals("Magic")) mazeController.magic.step();
 		redraw();
 	}
-	
+
 	public void startSearch(String searchType) {
 		maze.reColorMaze();
 		mazeController.setSearch(searchType);
-		
+
 		// Restart the search.  Since I don't know 
 		// which one, I'll restart all of them.
-		
+
 		mazeController.bfs = new BFS(maze, mazeController.getStart(), mazeController.getGoal());	// start in upper left and end in lower right corner
 		mazeController.dfs = new DFS(maze, mazeController.getStart(), mazeController.getGoal());
 		mazeController.greedy = new Greedy(maze, mazeController.getStart(), mazeController.getGoal());
