@@ -58,6 +58,17 @@ public class MazeDisplay extends Application {
 			Color.rgb(200,200,200)	// visited cell color
 	};  		// the color of each of the states  
 
+	
+	private Greedy greedy;
+	private BFS bfs;
+	private DFS dfs;
+	private RandomWalk rand;
+	private Magic magic;
+	private String search = "";
+	
+	private Point start;
+	private Point goal;
+	
 	// The maze to search
 	private Maze maze;
 
@@ -69,7 +80,7 @@ public class MazeDisplay extends Application {
 	public void start(Stage stage) {
 		// Initialize maze and maze controller
 		maze = new Maze(NUM_ROWS, NUM_COLUMNS);
-		mazeController = new MazeController(NUM_ROWS, NUM_COLUMNS);
+		mazeController = new MazeController(NUM_ROWS, NUM_COLUMNS, this);
 
 		// Initializing the gui
 		myScene = setupScene();
@@ -124,7 +135,7 @@ public class MazeDisplay extends Application {
 
 		Button stepButton = new Button("Step");
 		stepButton.setOnAction(value ->  {
-			this.doOneStep(MILLISECOND_DELAY);
+			mazeController.doOneStep(MILLISECOND_DELAY);
 		});
 		controls.getChildren().add(stepButton);
 		return controls;
@@ -194,8 +205,8 @@ public class MazeDisplay extends Application {
 	 * When this happens, we should also stop the search.
 	 */
 	public void newMaze() {
-		maze.createMaze(maze.getNumRows(),maze.getNumCols());
-		mazeController.setSearch("");
+		mazeController.getMaze().createMaze(mazeController.getMaze().getNumRows(), mazeController.getMaze().getNumCols());
+		search = "";
 		redraw();
 	}
 
@@ -228,7 +239,7 @@ public class MazeDisplay extends Application {
 	public void redraw(){
 		for(int i = 0; i< mirrorMaze.length; i++){
 			for(int j =0; j < mirrorMaze[i].length; j++){
-				mirrorMaze[i][j].setFill(color[getCellState(new Point(i,j))]);
+				mirrorMaze[i][j].setFill(color[mazeController.getCellState(new Point(i, j))]);
 			}
 		}
 	}
@@ -238,39 +249,36 @@ public class MazeDisplay extends Application {
 	 */
 	public void step(double elapsedTime){
 		if(!paused) {
-			doOneStep(elapsedTime);
+			mazeController.doOneStep(elapsedTime);
 		}
 	}
 
-	/*
-	 * Does a step in the search regardless of pause status
-	 */
-	public void doOneStep(double elapsedTime){
-		if(mazeController.getSearch().equals("DFS")) mazeController.dfs.step();
-		else if (mazeController.getSearch().equals("BFS")) mazeController.bfs.step();
-		else if (mazeController.getSearch().equals("Greedy")) mazeController.greedy.step();
-		else if (mazeController.getSearch().equals("RandomWalk")) mazeController.rand.step();
-		else if (mazeController.getSearch().equals("Magic")) mazeController.magic.step();
-		redraw();
-	}
+//	/*
+//	 * Does a step in the search regardless of pause status
+//	 */
+//	public void doOneStep(double elapsedTime){
+//		if(mazeController.getSearch().equals("DFS")) mazeController.dfs.step();
+//		else if (mazeController.getSearch().equals("BFS")) mazeController.bfs.step();
+//		else if (mazeController.getSearch().equals("Greedy")) mazeController.greedy.step();
+//		else if (mazeController.getSearch().equals("RandomWalk")) mazeController.rand.step();
+//		else if (mazeController.getSearch().equals("Magic")) mazeController.magic.step();
+//		redraw();
+//	}
 
 	public void startSearch(String searchType) {
 		maze.reColorMaze();
-		mazeController.setSearch(searchType);
-
-		// Restart the search.  Since I don't know 
-		// which one, I'll restart all of them.
-
-		mazeController.bfs = new BFS(maze, mazeController.getStart(), mazeController.getGoal());	// start in upper left and end in lower right corner
-		mazeController.dfs = new DFS(maze, mazeController.getStart(), mazeController.getGoal());
-		mazeController.greedy = new Greedy(maze, mazeController.getStart(), mazeController.getGoal());
-		mazeController.rand = new RandomWalk(maze, mazeController.getStart(), mazeController.getGoal());
-		mazeController.magic = new Magic(maze, mazeController.getStart(), mazeController.getGoal());
+		search = searchType;
+		
+		bfs = new BFS(maze, start, goal);
+		dfs = new DFS(maze, start, goal);
+		greedy = new Greedy(maze, start, goal);
+		rand = new RandomWalk(maze, start, goal);
+		magic = new Magic(maze, start, goal);
 	}
 
 
 	public int getCellState(Point position) {
-		return maze.get(position);
+		return mazeController.getMaze().get(position);
 	}
 
 	public static void main(String[] args) {

@@ -7,6 +7,7 @@ import searches.DFS;
 import searches.Greedy;
 import searches.Magic;
 import searches.RandomWalk;
+import searches.SearchAlgorithm;
 
 /**
  * 
@@ -29,106 +30,55 @@ import searches.RandomWalk;
 
 public class MazeController {
 	// Where to start and stop the search
-	public Point start;
-	public Point goal;
+	private Point start;
+	private Point goal;
+	
+	private boolean paused = false;
+	
 	// instance variables for cross class communication
 	public Maze myMaze;
 	public MazeDisplay myMazeDisplay;
+	
 	// Instance variables moved over from the model and display
-	public Greedy greedy;				
-	public BFS bfs;
-	public DFS dfs;
-	public RandomWalk rand;
-	public Magic magic;
-	public String search = "";
+	private Greedy greedy;				
+//	private BFS bfs;
+//	private DFS dfs;
+//	private RandomWalk rand;
+	private Magic magic;
+	
+//	public String search = "";
+	private SearchAlgorithm search;
 
-	public MazeController(int rows, int cols) {
-		// Initializing logic state
-		int numRows = rows;
-		int numColumns = cols;
-		start = new Point(1,1);
-		goal = new Point(numRows-2, numColumns-2);
+	public MazeController(int rows, int cols, MazeDisplay display) {
+		myMazeDisplay = display;
+		start = new Point(1, 1);
+		goal = new Point(rows - 2, cols - 2);
+		myMaze = new Maze(rows, cols);
 	}
 
-	public Point getStart() {
-		return start;
+	public void step(double elapsedTime) {
+		if (!paused) {
+			doOneStep(elapsedTime);
+		}
+	}
+	
+	public void doOneStep(double elapsedTime) {
+		if (search != null) {
+			search.step();
+			myMazeDisplay.redraw();
+		}
 	}
 
-	public void setStart(Point start) {
-		this.start = start;
-	}
-
-	public Point getGoal() {
-		return goal;
-	}
-
-	public void setGoal(Point goal) {
-		this.goal = goal;
-	}
-
-	public Maze getMyMaze() {
-		return myMaze;
-	}
-
-	public void setMyMaze(Maze myMaze) {
-		this.myMaze = myMaze;
-	}
-
-	public MazeDisplay getMyMazeDisplay() {
-		return myMazeDisplay;
-	}
-
-	public void setMyMazeDisplay(MazeDisplay myMazeDisplay) {
-		this.myMazeDisplay = myMazeDisplay;
-	}
-
-	public Greedy getGreedy() {
-		return greedy;
-	}
-
-	public void setGreedy(Greedy greedy) {
-		this.greedy = greedy;
-	}
-
-	public BFS getBfs() {
-		return bfs;
-	}
-
-	public void setBfs(BFS bfs) {
-		this.bfs = bfs;
-	}
-
-	public DFS getDfs() {
-		return dfs;
-	}
-
-	public void setDfs(DFS dfs) {
-		this.dfs = dfs;
-	}
-
-	public RandomWalk getRand() {
-		return rand;
-	}
-
-	public void setRand(RandomWalk rand) {
-		this.rand = rand;
-	}
-
-	public Magic getMagic() {
-		return magic;
-	}
-
-	public void setMagic(Magic magic) {
-		this.magic = magic;
-	}
-
-	public String getSearch() {
-		return search;
-	}
-
-	public void setSearch(String search) {
+	public void startSearch(SearchAlgorithm search) {
 		this.search = search;
 	}
-
+	
+	public int getCellState(Point position) {
+		return myMaze.get(position);
+	}
+	
+	public Maze getMaze() {
+		return myMaze;
+	}
 	
 }
